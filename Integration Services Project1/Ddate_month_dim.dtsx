@@ -11,12 +11,80 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Ddate_month_dim"
   DTS:PackageType="5"
-  DTS:VersionBuild="7"
-  DTS:VersionGUID="{E12BCBD1-C811-4559-B5CB-CAA3BD66F720}">
+  DTS:VersionBuild="16"
+  DTS:VersionGUID="{CAB161ED-032A-4288-BE75-FEB57D4BE891}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:Variables />
   <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\AdvisorMapping"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{66c5ba89-6d24-4954-b7a5-21d45d097dfc}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="AdvisorMapping"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="1">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{AB913143-CDA2-4B58-BBB2-BA95A47AB4E5}"
+          SQLTask:SqlStatementSource="delete from [DM_AdvisorRank].[AdvisorRank].[rAdvisorMapping];" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\dAdvisorLoad"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{ff7e7e54-7ad9-4b8e-9db2-3017deef81bf}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="dAdvisorLoad"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{AB913143-CDA2-4B58-BBB2-BA95A47AB4E5}"
+          SQLTask:SqlStatementSource="MERGE INTO Dm_AdvisorRank.AdvisorRank.dAdvisor AS T&#xA;&#x9;USING (SELECT &#xA;&#x9;ts.objid, &#xA;&#x9;ts.x_vchFirstname, &#xA;&#x9;ts.x_vchmiddlename, &#xA;&#x9;ts.name, &#xA;&#x9;ts.x_vchsuffix,&#xA;&#x9;ts.x_vchprefix, &#xA;&#x9;ts.x_tiemployee, &#xA;&#x9;ee.title AS 'Status', &#xA;&#x9;e.title AS 'Type',&#xA;&#x9;ts.x_dtUpdateDate,&#xA;&#x9;ts.x_dtbirthdate,&#xA;&#x9;ts.x_vchemail1&#xA;&#x9;FROM REP.dbo.table_site ts&#xA;&#x9;INNER JOIN REP.code.table_HGBST_Elm e ON e.objid = ts.x_itype &#xA;&#x9;INNER JOIN REP.code.table_HGBST_Elm ee ON ee.objid = ts.x_istatus&#xA;&#x9;WHERE ts.x_iType IN (268436058,&#xA;&#x9;268436059,&#xA;&#x9;268436060,&#xA;&#x9;268436374,&#xA;&#x9;268436981,&#xA;&#x9;268439380) &#xA;&#x9;AND NOT Exists(SELECT * FROM Dm_AdvisorRank.AdvisorRank.rAdvisorMapping am&#xA;&#x9;WHERE am.ClarifyDuplicatedExternalId = ts.objId)&#xA;&#x9;AND NOT Exists(SELECT * FROM dm_advisorrank.AdvisorRank.advisor_error_log ael&#xA;&#x9;WHERE ael.objid = ts.objId)&#xA;&#x9;) AS S&#xA;&#x9;ON (s.objid = t.ClarifyOriginalExternalID)&#xA;&#x9;WHEN MATCHED AND s.x_dtUpdateDate &gt; t.ETLUpdatedDate THEN&#xA;UPDATE SET&#xA;&#x9; t.FirstName = s.x_vchFirstName&#xA;&#x9;,t.MiddleName = s.x_vchMiddlename&#xA;&#x9;,t.LastName = s.Name&#xA;&#x9;,t.Suffix = s.x_vchSuffix&#xA;&#x9;,t.Prefix = s.x_vchPrefix&#xA;&#x9;,t.IsEmployee = s.x_tiEmployee&#xA;&#x9;,t.AdvisorStatus =  s.Status&#xA;&#x9;,t.AdvisorType = s.Type&#xA;&#x9;,t.DateOfBirth = s.x_dtbirthdate&#xA;&#x9;,t.emailid = s.x_vchemail1&#xA;&#x9;,t.ETLUpdatedDate = SYSDATETIME()&#xA;&#x9;,t.ETLUpdatedBy = 'SSIS'&#xA;&#x9;WHEN NOT MATCHED THEN INSERT        &#xA;&#x9;(ClarifyOriginalExternalID&#xA;&#x9;,FirstName&#xA;&#x9;,MiddleName&#xA;&#x9;,LastName&#xA;&#x9;,Suffix&#xA;&#x9;,Prefix&#xA;&#x9;,IsEmployee&#xA;&#x9;,AdvisorStatus&#xA;&#x9;,AdvisorType&#xA;&#x9;,ETLCreatedBy&#xA;&#x9;,ETLCreatedDate&#xA;&#x9;,ETLUpdatedDate&#xA;&#x9;,ETLUpdatedBy&#xA;&#x9;,DateOfBirth&#xA;&#x9;,emailid&#xA;&#x9;)&#xA;VALUES&#xA;&#x9;(s.objid, &#xA;&#x9;s.x_vchFirstname, &#xA;&#x9;s.x_vchmiddlename, &#xA;&#x9;s.name, &#xA;&#x9;s.x_vchsuffix,&#xA;&#x9;s.x_vchprefix, &#xA;&#x9;s.x_tiemployee, &#xA;&#x9;s.Status, &#xA;&#x9;s.Type,&#xA;&#x9;'SSIS',&#xA;&#x9;SYSDATETIME(),&#xA;&#x9;SYSDATETIME(),&#xA;&#x9;'SSIS',&#xA;&#x9; s.x_dtbirthdate,&#xA;&#x9; s.x_vchemail1&#xA;&#x9;);" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\DailyFactLoad"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{10932e01-f06c-45e3-a6fa-7355aa5b4f34}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="DailyFactLoad"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{AB913143-CDA2-4B58-BBB2-BA95A47AB4E5}"
+          SQLTask:SqlStatementSource="MERGE INTO AdvisorRank.fDailyProductionYTD AS T&#xA;&#x9;USING (SELECT ph.DateID&#xA;        , ph.AdvisorID&#xA;        , ph.AdvisorName&#xA;        , ph.IsEmployee&#xA;&#x9;&#x9;, [rank] = RANK() OVER (ORDER BY ph.Production DESC)&#xA;        , ph.Production AS YTDProduction&#xA;&#x9;&#x9;, ph.Production/DATENAME(dayofyear , GETDATE()-1)*365 AS 'YTDAnn'&#x9;&#x9;&#xA;FROM AdvisorRank.ProdHold_daily ph&#xA;WHERE ph.IsEmployee = 0 &#xA;UNION ALL&#xA;SELECT    ph.DateID&#xA;        , ph.AdvisorID&#xA;        , ph.AdvisorName&#xA;        , ph.IsEmployee&#xA;&#x9;&#x9;, NULL AS 'Rank'&#xA;        , ph.Production AS YTDProduction&#xA;&#x9;&#x9;, ph.Production/DATENAME(dayofyear , GETDATE()-1)*365 AS 'YTDAnn'&#x9;&#x9;&#xA;FROM AdvisorRank.ProdHold_daily ph&#xA;WHERE ph.IsEmployee = 1&#xA;) AS S&#xA;ON (s.DateId = t.DateId AND s.AdvisorId = t.AdvisorId)&#xA;WHEN MATCHED THEN&#xA;&#x9;UPDATE SET&#xA;&#x9;&#x9;t.YTDRank = s.Rank&#xA;&#x9;   ,t.YTDProd = s.YTDProduction&#xA;&#x9;   ,t.YTDAnn = s.YTDAnn&#xA;&#x9;   ,t.ETLUpdatedDate = SYSDATETIME()&#xA;&#x9;   ,t.ETLUpdatedBy = 'SSIS'&#xA;&#x9;   ,t.ETLCreatedBy = 'SSIS'&#xA;&#x9;   ,t.ETLCreatedDate = SYSDATETIME()&#xA;WHEN NOT MATCHED &#xA;THEN INSERT        &#xA;       (DateId&#xA;      ,AdvisorId&#xA;      ,AdvisorName&#xA;      ,IsEmployee&#xA;      ,YTDRank&#xA;      ,YTDProd&#xA;      ,YTDAnn&#xA;&#x9;  ,ETLCreatedDate&#xA;&#x9;  ,ETLUpdatedDate&#xA;&#x9;  ,ETLCreatedBy&#xA;&#x9;  ,ETLUpdatedBy)        &#xA;VALUES &#xA;&#x9;(s.DateId, &#xA;&#x9;s.AdvisorId, &#xA;&#x9;s.AdvisorName, &#xA;&#x9;s.IsEmployee, &#xA;&#x9;s.Rank,&#xA;&#x9;s.YTDProduction, &#xA;&#x9;s.YTDAnn, &#xA;&#x9;SYSDATETIME(),&#xA;&#x9;SYSDATETIME(),&#xA;&#x9;'SSIS',&#xA;&#x9;'SSIS');" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\dailyloadintotemp"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{e653801c-d859-4997-ad60-36ead3786b2f}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="dailyloadintotemp"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{AB913143-CDA2-4B58-BBB2-BA95A47AB4E5}"
+          SQLTask:SqlStatementSource="insert into AdvisorRank.ProdHold_daily&#xA;SELECT d.DateID&#xA;&#x9;&#x9;, a.advisorid&#xA;&#x9;&#x9;, a.FirstName + ' ' + a.LastName AS AdvisorName&#xA;&#x9;&#x9;, a.IsEmployee &#xA;&#x9;&#x9;, SUM (CASE LEFT(c.vchProductType,1) WHEN 'I' THEN c.mNetCommission ELSE c.mReallowance END) AS Production&#xA;FROM AdvisorRank.vAdvisorExternalId a&#xA;INNER JOIN AdvisorRank.dDate d&#xA;&#x9;ON d.CalendarDate = convert(varchar, getdate() - 1, 23)&#xA;INNER JOIN DM_AdvisorRank.[commissions].[Rep_Commission] c &#xA;&#x9;ON c.iRep2SiteObj = a.ClarifyExternalID &#xA;&#x9;AND c.vchCommType2Codes = 'REG'&#xA;INNER JOIN DM_AdvisorRank.[commissions].Revenue r &#xA;&#x9;ON r.iRevenueId = c.iRevenueId&#xA;&#x9;AND r.dtSetRecDate &gt;= DATEADD(yy,DATEDIFF(yy,0,GETDATE()),0) &#xA;&#x9;AND r.dtSetRecDate &lt;= convert(varchar, getdate() - 1, 23)&#xA;&#x9;AND r.vchRevStatus2codes IN ('Paid', 'Posted')&#xA;WHERE a.AdvisorStatus = 'Active'&#xA;GROUP BY d.DateId, a.advisorid, a.FirstName + ' ' + a.LastName, a.IsEmployee;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
     <DTS:Executable
       DTS:refId="Package\DateMonthLoad"
       DTS:CreationName="Microsoft.Pipeline"
@@ -31,6 +99,232 @@
         <pipeline
           version="1">
           <components>
+            <component
+              refId="Package\DateMonthLoad\Source_advmmap_teslard"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+              description="OLE DB Source"
+              name="Source_advmmap_teslard"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset">[AdvisorRank].[rAdvisorMapping]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">select *from DM_AdvisorRank.AdvisorRank.test1</property>
+                <property
+                  dataType="System.String"
+                  description="The variable that contains the SQL command to be executed."
+                  name="SqlCommandVariable"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">0</property>
+                <property
+                  dataType="System.String"
+                  description="The mappings between the parameters in the SQL command and variables."
+                  name="ParameterMapping"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\DateMonthLoad\Source_advmmap_teslard.Connections[OleDbConnection]"
+                  connectionManagerID="{235C71B7-9DB5-42D2-B0D9-05E0265FC0C6}:external"
+                  connectionManagerRefId="Project.ConnectionManagers[TESLAREADONLY.CFNCoreDB]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[AdvisorMappingID]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].ExternalColumns[AdvisorMappingID]"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[AdvisorMappingID]"
+                      name="AdvisorMappingID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[ClarifyDuplicatedExternalID]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].ExternalColumns[ClarifyDuplicatedExternalID]"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[ClarifyDuplicatedExternalID]"
+                      name="ClarifyDuplicatedExternalID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[ClarifyOriginalExternalID]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].ExternalColumns[ClarifyOriginalExternalID]"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[ClarifyOriginalExternalID]"
+                      name="ClarifyOriginalExternalID"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[CreatedDate]"
+                      dataType="dbTimeStamp2"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].ExternalColumns[CreatedDate]"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[CreatedDate]"
+                      name="CreatedDate"
+                      scale="7"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[CreatedBy]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].ExternalColumns[CreatedBy]"
+                      length="128"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[CreatedBy]"
+                      name="CreatedBy"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[UpdatedDate]"
+                      dataType="dbTimeStamp2"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].ExternalColumns[UpdatedDate]"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[UpdatedDate]"
+                      name="UpdatedDate"
+                      scale="7"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[UpdatedBy]"
+                      dataType="wstr"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].ExternalColumns[UpdatedBy]"
+                      length="128"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[UpdatedBy]"
+                      name="UpdatedBy"
+                      truncationRowDisposition="FailComponent" />
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].ExternalColumns[AdvisorMappingID]"
+                      dataType="i4"
+                      name="AdvisorMappingID" />
+                    <externalMetadataColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].ExternalColumns[ClarifyDuplicatedExternalID]"
+                      dataType="i4"
+                      name="ClarifyDuplicatedExternalID" />
+                    <externalMetadataColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].ExternalColumns[ClarifyOriginalExternalID]"
+                      dataType="i4"
+                      name="ClarifyOriginalExternalID" />
+                    <externalMetadataColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].ExternalColumns[CreatedDate]"
+                      dataType="dbTimeStamp2"
+                      name="CreatedDate"
+                      scale="7" />
+                    <externalMetadataColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].ExternalColumns[CreatedBy]"
+                      dataType="wstr"
+                      length="128"
+                      name="CreatedBy" />
+                    <externalMetadataColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].ExternalColumns[UpdatedDate]"
+                      dataType="dbTimeStamp2"
+                      name="UpdatedDate"
+                      scale="7" />
+                    <externalMetadataColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].ExternalColumns[UpdatedBy]"
+                      dataType="wstr"
+                      length="128"
+                      name="UpdatedBy" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output]"
+                  isErrorOut="true"
+                  name="OLE DB Source Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[AdvisorMappingID]"
+                      dataType="i4"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[AdvisorMappingID]"
+                      name="AdvisorMappingID" />
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[ClarifyDuplicatedExternalID]"
+                      dataType="i4"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[ClarifyDuplicatedExternalID]"
+                      name="ClarifyDuplicatedExternalID" />
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[ClarifyOriginalExternalID]"
+                      dataType="i4"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[ClarifyOriginalExternalID]"
+                      name="ClarifyOriginalExternalID" />
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[CreatedDate]"
+                      dataType="dbTimeStamp2"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[CreatedDate]"
+                      name="CreatedDate"
+                      scale="7" />
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[CreatedBy]"
+                      dataType="wstr"
+                      length="128"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[CreatedBy]"
+                      name="CreatedBy" />
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[UpdatedDate]"
+                      dataType="dbTimeStamp2"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[UpdatedDate]"
+                      name="UpdatedDate"
+                      scale="7" />
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[UpdatedBy]"
+                      dataType="wstr"
+                      length="128"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[UpdatedBy]"
+                      name="UpdatedBy" />
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
             <component
               refId="Package\DateMonthLoad\Source_ddate_teslard"
               componentClassID="Microsoft.OLEDBSource"
@@ -346,6 +640,181 @@
               </outputs>
             </component>
             <component
+              refId="Package\DateMonthLoad\Target_advmap_hubledev"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+              description="OLE DB Destination"
+              name="Target_advmap_hubledev"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset">[AdvisorRank].[rAdvisorMapping]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">0</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepIdentity">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepNulls">false</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                  name="FastLoadMaxInsertCommitSize">2147483647</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\DateMonthLoad\Target_advmap_hubledev.Connections[OleDbConnection]"
+                  connectionManagerID="{AB913143-CDA2-4B58-BBB2-BA95A47AB4E5}:external"
+                  connectionManagerRefId="Project.ConnectionManagers[DC01DB-D015SQL.DM_AdvisorRank]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input]"
+                  errorOrTruncationOperation="Insert"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].Columns[ClarifyDuplicatedExternalID]"
+                      cachedDataType="i4"
+                      cachedName="ClarifyDuplicatedExternalID"
+                      externalMetadataColumnId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].ExternalColumns[ClarifyDuplicatedExternalID]"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[ClarifyDuplicatedExternalID]" />
+                    <inputColumn
+                      refId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].Columns[ClarifyOriginalExternalID]"
+                      cachedDataType="i4"
+                      cachedName="ClarifyOriginalExternalID"
+                      externalMetadataColumnId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].ExternalColumns[ClarifyOriginalExternalID]"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[ClarifyOriginalExternalID]" />
+                    <inputColumn
+                      refId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].Columns[CreatedDate]"
+                      cachedDataType="dbTimeStamp2"
+                      cachedName="CreatedDate"
+                      cachedScale="7"
+                      externalMetadataColumnId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].ExternalColumns[CreatedDate]"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[CreatedDate]" />
+                    <inputColumn
+                      refId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].Columns[CreatedBy]"
+                      cachedDataType="wstr"
+                      cachedLength="128"
+                      cachedName="CreatedBy"
+                      externalMetadataColumnId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].ExternalColumns[CreatedBy]"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[CreatedBy]" />
+                    <inputColumn
+                      refId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].Columns[UpdatedDate]"
+                      cachedDataType="dbTimeStamp2"
+                      cachedName="UpdatedDate"
+                      cachedScale="7"
+                      externalMetadataColumnId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].ExternalColumns[UpdatedDate]"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[UpdatedDate]" />
+                    <inputColumn
+                      refId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].Columns[UpdatedBy]"
+                      cachedDataType="wstr"
+                      cachedLength="128"
+                      cachedName="UpdatedBy"
+                      externalMetadataColumnId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].ExternalColumns[UpdatedBy]"
+                      lineageId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output].Columns[UpdatedBy]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].ExternalColumns[AdvisorMappingID]"
+                      dataType="i4"
+                      name="AdvisorMappingID" />
+                    <externalMetadataColumn
+                      refId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].ExternalColumns[ClarifyDuplicatedExternalID]"
+                      dataType="i4"
+                      name="ClarifyDuplicatedExternalID" />
+                    <externalMetadataColumn
+                      refId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].ExternalColumns[ClarifyOriginalExternalID]"
+                      dataType="i4"
+                      name="ClarifyOriginalExternalID" />
+                    <externalMetadataColumn
+                      refId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].ExternalColumns[CreatedDate]"
+                      dataType="dbTimeStamp2"
+                      name="CreatedDate"
+                      scale="7" />
+                    <externalMetadataColumn
+                      refId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].ExternalColumns[CreatedBy]"
+                      dataType="wstr"
+                      length="128"
+                      name="CreatedBy" />
+                    <externalMetadataColumn
+                      refId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].ExternalColumns[UpdatedDate]"
+                      dataType="dbTimeStamp2"
+                      name="UpdatedDate"
+                      scale="7" />
+                    <externalMetadataColumn
+                      refId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input].ExternalColumns[UpdatedBy]"
+                      dataType="wstr"
+                      length="128"
+                      name="UpdatedBy" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\DateMonthLoad\Target_advmap_hubledev.Outputs[OLE DB Destination Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Destination Error Output"
+                  synchronousInputId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Target_advmap_hubledev.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\DateMonthLoad\Target_advmap_hubledev.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\DateMonthLoad\Target_advmap_hubledev.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\DateMonthLoad\Target_advmap_hubledev.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
               refId="Package\DateMonthLoad\Target_ddate_hubledev"
               componentClassID="Microsoft.OLEDBDestination"
               contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
@@ -641,6 +1110,11 @@
               endId="Package\DateMonthLoad\Target_dmonth_hubledev.Inputs[OLE DB Destination Input]"
               name="OLE DB Source Output"
               startId="Package\DateMonthLoad\Source_dmonth_teslard.Outputs[OLE DB Source Output]" />
+            <path
+              refId="Package\DateMonthLoad.Paths[OLE DB Source Output2]"
+              endId="Package\DateMonthLoad\Target_advmap_hubledev.Inputs[OLE DB Destination Input]"
+              name="OLE DB Source Output"
+              startId="Package\DateMonthLoad\Source_advmmap_teslard.Outputs[OLE DB Source Output]" />
           </paths>
         </pipeline>
       </DTS:ObjectData>
@@ -663,6 +1137,40 @@
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
+      DTS:refId="Package\loadadvisorbad"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{cfe2f4ee-4f99-4530-9ca5-886b529fee99}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="loadadvisorbad"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{AB913143-CDA2-4B58-BBB2-BA95A47AB4E5}"
+          SQLTask:SqlStatementSource="insert into dm_advisorrank.AdvisorRank.advisor_error_log&#xA;SELECT &#xA;&#x9;ts.objid, &#xA;&#x9;ts.x_vchFirstname, &#xA;&#x9;ts.x_vchmiddlename, &#xA;&#x9;ts.name, &#xA;&#x9;ts.x_vchsuffix,&#xA;&#x9;ts.x_vchprefix, &#xA;&#x9;ts.x_tiemployee, &#xA;&#x9;ee.title AS 'Status', &#xA;&#x9;e.title AS 'Type',&#xA;&#x9;ts.x_dtUpdateDate,&#xA;&#x9;ts.x_dtbirthdate,&#xA;&#x9;ts.x_vchemail1,&#xA;&#x9;SYSDATETIME() created_date,&#xA;&#x9;'VALIDATION FAILURE' ERROR_DESC&#xA;&#x9;FROM REP.dbo.table_site ts&#xA;&#x9;INNER JOIN REP.code.table_HGBST_Elm e ON e.objid = ts.x_itype &#xA;&#x9;INNER JOIN REP.code.table_HGBST_Elm ee ON ee.objid = ts.x_istatus&#xA;&#x9;WHERE ts.x_iType IN (268436058,&#xA;&#x9;268436059,&#xA;&#x9;268436060,&#xA;&#x9;268436374,&#xA;&#x9;268436981,&#xA;&#x9;268439380&#xA;&#x9;) &#xA;&#x9;AND NOT Exists(SELECT * FROM Dm_AdvisorRank.AdvisorRank.rAdvisorMapping am&#xA;&#x9;WHERE am.ClarifyDuplicatedExternalId = ts.objId)&#xA;&#x9;AND (ts.x_vchemail1 is null &#xA;&#x9;or ts.x_dtbirthdate is null&#xA;&#x9;or ts.x_vchemail1 not like'%@%'&#xA;&#x9;or CONVERT(int,ROUND(DATEDIFF(hour,x_dtbirthdate,GETDATE())/8766.0,0)) &lt; 18);" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\MonthlyFactLoad"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{6f6a64ae-4936-4b09-a266-e024176a51dc}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="MonthlyFactLoad"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{AB913143-CDA2-4B58-BBB2-BA95A47AB4E5}"
+          SQLTask:SqlStatementSource="MERGE INTO AdvisorRank.fMonthlyProductionYTD AS T&#xA;&#x9;USING (SELECT &#xA;&#x9;ts.DateId,&#xA;&#x9;d.CalendarDate,&#xA;&#x9;m.MonthId,&#xA;&#x9;ts.AdvisorId, &#xA;&#x9;ts.AdvisorName, &#xA;&#x9;ts.IsEmployee, &#xA;&#x9;ts.YTDRank,&#xA;&#x9;ts.YTDProd, &#xA;&#x9;ts.YTDAnn,&#xA;&#x9;ts.ETLCreatedDate,&#xA;&#x9;ts.ETLUpdatedDate&#x9;&#xA;&#x9;FROM AdvisorRank.fDailyProductionYTD ts&#x9;&#xA;&#x9;INNER JOIN AdvisorRank.dDate d&#xA;    ON d.DateID = ts.DateID&#xA;&#x9;INNER JOIN AdvisorRank.dMonth m&#xA;&#x9;ON m.MonthName = d.MonthName AND m.MonthYear = d.YearNumber&#xA;&#x9;WHERE d.CalendarDate = EOMONTH(GETDATE()-1,-1)) AS S&#xA;&#x9;ON (s.MonthId = t.MonthId AND s.AdvisorId = t.AdvisorId)&#xA;WHEN MATCHED THEN&#xA;UPDATE SET&#xA;&#x9; t.YTDRank = s.YTDRank&#xA;&#x9;,t.YTDProd = s.YTDProd&#xA;&#x9;,t.YTDAnn = s.YTDAnn&#xA;&#x9;,t.ETLUpdatedDate = SYSDATETIME()&#xA;&#x9;,t.ETLUpdatedBy = 'SSIS'&#xA;&#x9;,t.ETLCreatedBy = 'SSIS'&#xA;&#x9;,t.ETLCreatedDate = SYSDATETIME()&#xA;WHEN NOT MATCHED &#xA;THEN INSERT &#xA;&#x9;(MonthID&#xA;&#x9;,AdvisorID&#xA;&#x9;,AdvisorName&#xA;&#x9;,IsEmployee&#xA;&#x9;,YTDRank&#xA;&#x9;,YTDProd&#xA;&#x9;,YTDAnn&#xA;&#x9;,ETLCreatedDate&#xA;&#x9;,ETLUpdatedDate&#xA;&#x9;,ETLCreatedBy&#xA;&#x9;,ETLUpdatedBy&#xA;&#x9;)&#xA;VALUES&#xA;&#x9; (s.MonthID&#xA;&#x9;,s.AdvisorID&#xA;&#x9;,s.AdvisorName&#xA;&#x9;,s.IsEmployee&#xA;&#x9;,s.YTDRank&#xA;&#x9;,s.YTDProd&#xA;&#x9;,s.YTDAnn&#xA;&#x9;,s.ETLCreatedDate&#xA;&#x9;,s.ETLUpdatedDate&#xA;&#x9;,'SSIS'&#xA;&#x9;,'SSIS');" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
       DTS:refId="Package\MonthReset"
       DTS:CreationName="Microsoft.ExecuteSQLTask"
       DTS:Description="Execute SQL Task"
@@ -671,12 +1179,46 @@
       DTS:LocaleID="-1"
       DTS:ObjectName="MonthReset"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="1">
+      DTS:ThreadHint="2">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{AB913143-CDA2-4B58-BBB2-BA95A47AB4E5}"
           SQLTask:SqlStatementSource="delete from [DM_AdvisorRank].[AdvisorRank].[dMonth];" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\resetadvisorlog"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{7d1aff07-9a71-4d7b-84a4-02536db095b4}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="resetadvisorlog"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{AB913143-CDA2-4B58-BBB2-BA95A47AB4E5}"
+          SQLTask:SqlStatementSource="delete from dm_advisorrank.AdvisorRank.advisor_error_log&#xA;;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\resetprodhold"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{13276a2f-3e47-41c1-bd4c-7a892f9dc1b0}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="resetprodhold"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{AB913143-CDA2-4B58-BBB2-BA95A47AB4E5}"
+          SQLTask:SqlStatementSource="truncate table AdvisorRank.ProdHold_daily;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
   </DTS:Executables>
@@ -697,6 +1239,70 @@
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint 1"
       DTS:To="Package\DateMonthLoad" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 2]"
+      DTS:CreationName=""
+      DTS:DTSID="{A4090ADE-C3CA-4550-8045-1C2BA7E0F191}"
+      DTS:From="Package\AdvisorMapping"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 2"
+      DTS:To="Package\DateMonthLoad" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 3]"
+      DTS:CreationName=""
+      DTS:DTSID="{C9C20FC2-DA40-4798-86C2-0059DCACEC07}"
+      DTS:From="Package\DateMonthLoad"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 3"
+      DTS:To="Package\resetadvisorlog" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 4]"
+      DTS:CreationName=""
+      DTS:DTSID="{C1CD1519-CD22-42CD-9EB9-FF9CB6F933BE}"
+      DTS:From="Package\resetadvisorlog"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 4"
+      DTS:To="Package\loadadvisorbad" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 5]"
+      DTS:CreationName=""
+      DTS:DTSID="{96F3ED79-3447-4EBF-A0CB-D2329714E948}"
+      DTS:From="Package\loadadvisorbad"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 5"
+      DTS:To="Package\dAdvisorLoad" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 6]"
+      DTS:CreationName=""
+      DTS:DTSID="{F5AED677-72CD-4DA3-862B-90D48F454DDD}"
+      DTS:From="Package\dAdvisorLoad"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 6"
+      DTS:To="Package\resetprodhold" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 7]"
+      DTS:CreationName=""
+      DTS:DTSID="{8104B15F-10B3-474B-A83F-310A175184AE}"
+      DTS:From="Package\resetprodhold"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 7"
+      DTS:To="Package\dailyloadintotemp" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 8]"
+      DTS:CreationName=""
+      DTS:DTSID="{B7A53B1E-CB13-4C61-83F1-CC58738BF9FC}"
+      DTS:From="Package\dailyloadintotemp"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 8"
+      DTS:To="Package\DailyFactLoad" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 9]"
+      DTS:CreationName=""
+      DTS:DTSID="{705FEE0B-B9BE-4FF4-A3CE-BE8C7B1EBC7F}"
+      DTS:From="Package\DailyFactLoad"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 9"
+      DTS:To="Package\MonthlyFactLoad" />
   </DTS:PrecedenceConstraints>
   <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
 <!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
@@ -709,41 +1315,67 @@
     design-time-name="Package">
     <LayoutInfo>
       <GraphLayout
-        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="169,42"
           Id="Package\DateMonthLoad"
-          TopLeft="154.5,102.5" />
+          TopLeft="247.5,117.5" />
         <NodeLayout
           Size="131,42"
           Id="Package\DateReset"
           TopLeft="62,22" />
+        <NodeLayout
+          Size="170,42"
+          Id="Package\MonthReset"
+          TopLeft="248,21" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint]"
           TopLeft="127.5,64">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="84.6666666666667,38.5"
+              EndConnector="164.25,53.5"
               Start="0,0"
-              End="84.6666666666667,31">
+              End="164.25,46">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,18.8833528722157" />
+                    End="0,31.1126213592233" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,18.8833528722157"
-                    Point2="0,22.8833528722157"
-                    Point3="4,22.8833528722157" />
+                    Point1="0,31.1126213592233"
+                    Point2="0,35.1126213592233"
+                    Point3="4,35.1126213592233" />
                   <mssgle:LineSegment
-                    End="80.6666666666667,22.8833528722157" />
+                    End="160.25,35.1126213592233" />
                   <mssgle:CubicBezierSegment
-                    Point1="80.6666666666667,22.8833528722157"
-                    Point2="84.6666666666667,22.8833528722157"
-                    Point3="84.6666666666667,26.8833528722157" />
+                    Point1="160.25,35.1126213592233"
+                    Point2="164.25,35.1126213592233"
+                    Point3="164.25,39.1126213592233" />
                   <mssgle:LineSegment
-                    End="84.6666666666667,31" />
+                    End="164.25,46" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 1]"
+          TopLeft="332.5,63">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,54.5"
+              Start="0,0"
+              End="0,47">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,47" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -754,34 +1386,240 @@
         </EdgeLayout>
         <NodeLayout
           Size="170,42"
-          Id="Package\MonthReset"
-          TopLeft="248,21" />
+          Id="Package\AdvisorMapping"
+          TopLeft="454,20.5" />
         <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 1]"
-          TopLeft="333,63">
+          Id="Package.PrecedenceConstraints[Constraint 2]"
+          TopLeft="539,62.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-67.1666666666667,39.5"
+              EndConnector="-166.75,55"
               Start="0,0"
-              End="-67.1666666666667,32">
+              End="-166.75,47.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,19.4777256740914" />
+                    End="0,32.0970873786408" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,19.4777256740914"
-                    Point2="0,23.4777256740914"
-                    Point3="-4,23.4777256740914" />
+                    Point1="0,32.0970873786408"
+                    Point2="0,36.0970873786408"
+                    Point3="-4,36.0970873786408" />
                   <mssgle:LineSegment
-                    End="-63.1666666666667,23.4777256740914" />
+                    End="-162.75,36.0970873786408" />
                   <mssgle:CubicBezierSegment
-                    Point1="-63.1666666666667,23.4777256740914"
-                    Point2="-67.1666666666667,23.4777256740914"
-                    Point3="-67.1666666666667,27.4777256740914" />
+                    Point1="-162.75,36.0970873786408"
+                    Point2="-166.75,36.0970873786408"
+                    Point3="-166.75,40.0970873786408" />
                   <mssgle:LineSegment
-                    End="-67.1666666666667,32" />
+                    End="-166.75,47.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="170,42"
+          Id="Package\loadadvisorbad"
+          TopLeft="243,284" />
+        <NodeLayout
+          Size="170,42"
+          Id="Package\dAdvisorLoad"
+          TopLeft="242,363" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 5]"
+          TopLeft="327.5,326">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,37"
+              Start="0,0"
+              End="0,29.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,29.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="170,42"
+          Id="Package\resetadvisorlog"
+          TopLeft="242,195" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 4]"
+          TopLeft="327.5,237">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,47"
+              Start="0,0"
+              End="0,39.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,39.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 3]"
+          TopLeft="329.5,159.5">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,35.5"
+              Start="0,0"
+              End="0,28">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,28" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="146,42"
+          Id="Package\resetprodhold"
+          TopLeft="248,437" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 6]"
+          TopLeft="324,405">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,32"
+              Start="0,0"
+              End="0,24.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,24.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="173,42"
+          Id="Package\dailyloadintotemp"
+          TopLeft="242,499" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 7]"
+          TopLeft="248,458">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-6,62"
+              Start="0,0"
+              End="-13.5,62">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="-24.5,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-24.5,0"
+                    Point2="-28.5,0"
+                    Point3="-28.5,4" />
+                  <mssgle:LineSegment
+                    End="-28.5,58" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-28.5,58"
+                    Point2="-28.5,62"
+                    Point3="-24.5,62" />
+                  <mssgle:LineSegment
+                    End="-13.5,62" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="170,42"
+          Id="Package\DailyFactLoad"
+          TopLeft="249,577" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 8]"
+          TopLeft="331.25,541">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,36"
+              Start="0,0"
+              End="0,28.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,28.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="163,42"
+          Id="Package\MonthlyFactLoad"
+          TopLeft="244.222222222222,652.333333333333" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 9]"
+          TopLeft="334,619">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-10.7777777777778,33.3333333333334"
+              Start="0,0"
+              End="-10.7777777777778,25.8333333333334">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,12.6666666666667" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,12.6666666666667"
+                    Point2="0,16.6666666666667"
+                    Point3="-4,16.6666666666667" />
+                  <mssgle:LineSegment
+                    End="-6.77777777777783,16.6666666666667" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-6.77777777777783,16.6666666666667"
+                    Point2="-10.7777777777778,16.6666666666667"
+                    Point3="-10.7777777777778,20.6666666666667" />
+                  <mssgle:LineSegment
+                    End="-10.7777777777778,25.8333333333334" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -797,18 +1635,48 @@
     design-time-name="Package\DateMonthLoad">
     <LayoutInfo>
       <GraphLayout
-        Capacity="8" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
-        <NodeLayout
-          Size="187,42"
-          Id="Package\DateMonthLoad\Source_ddate_teslard"
-          TopLeft="162.5,42.5" />
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="196,42"
           Id="Package\DateMonthLoad\Target_ddate_hubledev"
-          TopLeft="153.5,147.5" />
+          TopLeft="48.5,147.5" />
+        <NodeLayout
+          Size="220,42"
+          Id="Package\DateMonthLoad\Target_dmonth_hubledev"
+          TopLeft="283,150" />
+        <NodeLayout
+          Size="187,42"
+          Id="Package\DateMonthLoad\Source_ddate_teslard"
+          TopLeft="57.5,42.5" />
+        <NodeLayout
+          Size="196,42"
+          Id="Package\DateMonthLoad\Source_dmonth_teslard"
+          TopLeft="292,45" />
+        <EdgeLayout
+          Id="Package\DateMonthLoad.Paths[OLE DB Source Output1]"
+          TopLeft="391.5,87">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="0,63"
+              Start="0,0"
+              End="0,55.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,55.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
         <EdgeLayout
           Id="Package\DateMonthLoad.Paths[OLE DB Source Output]"
-          TopLeft="253.75,84.5">
+          TopLeft="148.75,84.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -829,27 +1697,27 @@
           </EdgeLayout.Labels>
         </EdgeLayout>
         <NodeLayout
-          Size="196,42"
-          Id="Package\DateMonthLoad\Source_dmonth_teslard"
-          TopLeft="397,45" />
+          Size="223,49"
+          Id="Package\DateMonthLoad\Source_advmmap_teslard"
+          TopLeft="516,46" />
         <NodeLayout
           Size="220,42"
-          Id="Package\DateMonthLoad\Target_dmonth_hubledev"
-          TopLeft="388,150" />
+          Id="Package\DateMonthLoad\Target_advmap_hubledev"
+          TopLeft="521.5,150" />
         <EdgeLayout
-          Id="Package\DateMonthLoad.Paths[OLE DB Source Output1]"
-          TopLeft="496.5,87">
+          Id="Package\DateMonthLoad.Paths[OLE DB Source Output2]"
+          TopLeft="629.5,95">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,63"
+              EndConnector="0,55"
               Start="0,0"
-              End="0,55.5">
+              End="0,47.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,55.5" />
+                    End="0,47.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -862,7 +1730,7 @@
     </LayoutInfo>
   </TaskHost>
   <PipelineComponentMetadata
-    design-time-name="Package\DateMonthLoad\Source_ddate_teslard">
+    design-time-name="Package\DateMonthLoad\Target_ddate_hubledev">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
@@ -875,7 +1743,20 @@
     </Properties>
   </PipelineComponentMetadata>
   <PipelineComponentMetadata
-    design-time-name="Package\DateMonthLoad\Target_ddate_hubledev">
+    design-time-name="Package\DateMonthLoad\Target_dmonth_hubledev">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\DateMonthLoad\Source_ddate_teslard">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
@@ -901,7 +1782,20 @@
     </Properties>
   </PipelineComponentMetadata>
   <PipelineComponentMetadata
-    design-time-name="Package\DateMonthLoad\Target_dmonth_hubledev">
+    design-time-name="Package\DateMonthLoad\Source_advmmap_teslard">
+    <Properties>
+      <Property>
+        <Name>DataSourceViewID</Name>
+      </Property>
+      <Property>
+        <Name>TableInfoObjectType</Name>
+        <Value
+          type="q2:string">Table</Value>
+      </Property>
+    </Properties>
+  </PipelineComponentMetadata>
+  <PipelineComponentMetadata
+    design-time-name="Package\DateMonthLoad\Target_advmap_hubledev">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
